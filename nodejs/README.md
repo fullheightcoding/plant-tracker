@@ -15,5 +15,11 @@ schema:
 - plant location
 - plant requirements
 
-testing
+reactjs client
 --
+todo:
+- display plants
+- dashboard
+- submit plants
+- edit plants
+- delete plants
