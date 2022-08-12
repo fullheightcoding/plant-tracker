@@ -1,13 +1,12 @@
 const express = require('express');
-const plant = require('../models/plant');
 const router = express.Router();
 const Plant = require('../models/plant');
-const PLANT_GET_LIMIT = 10;
+const GET_LIMIT = 10;
 
 //get
 router.get('/', async function(req, res) {
     try {
-        const plants = await Plant.find().limit(PLANT_GET_LIMIT);
+        const plants = await Plant.find().limit(GET_LIMIT);
         if (!plants) {
             res.send('Error: unable to find plants')
         }
