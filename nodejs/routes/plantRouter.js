@@ -35,6 +35,9 @@ router.get('/:name', async function(req, res) {
 router.post('/', async function(req, res) {
     const plant = new Plant({
         name: req.body.name,
+        location: req.body.location,
+        lightingRequirements: req.body.lightingRequirements,
+        wateringRequirements: req.body.wateringRequirements
     })
 
     try {
