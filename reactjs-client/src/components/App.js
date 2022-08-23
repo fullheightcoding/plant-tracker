@@ -1,19 +1,19 @@
-import logo from './logo.svg';
-import './App.css';
-import { useState, useEffect, useReducer } from 'react';
-import {reducer} from './reducer'
+import '../App.css';
+import { useState, useEffect } from 'react';
+// import {reducer} from './reducer';
+import Modal from './Modal';
 
 const url = 'http://localhost:9000/plants';
-const defaultState = {
-  plants: []
-};
+// const defaultState = {
+//   plants: []
+// };
 
-function App() {
-  // const [formData, setFormData] = useState({newName: "", newLocation: "", newLighting: "", newWatering: ""});
+export default function App() {
   const [formData, setFormData] = useState({name: "", location: "", lightingRequirements: "", wateringRequirements: ""});
-
   const [plants, setPlants] = useState([]);
-  const [state, dispatch] = useReducer(reducer, defaultState);
+  // const [state, dispatch] = useReducer(reducer, defaultState);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState("");
 
   const getPlants = async () => {
     const response = await fetch(url);
@@ -39,11 +39,20 @@ function App() {
       console.log(jsonResponse);
 
       //how to update plants array on a successful post?
-      plants.push(formData);
+      setPlants((prevPlants) => [...prevPlants, formData]);
+
       //how to clear formData on a successful post?
       setFormData({name: "", location: "", lightingRequirements: "", wateringRequirements: ""});
+
+      //display message in modal
+      setIsModalOpen(true);
+      setModalContent('Successfully added a new plant');
     } else {
       //handling errors
+      //display message in modal
+      setIsModalOpen(true);
+      setModalContent('Error: not able to add a new plant');
+
       console.log(response.status, response.statusText);
     }
   }
@@ -54,12 +63,6 @@ function App() {
 
     //how to send this to nodejs rest api?
     postData();
-
-    //should we add to the plants array then send to the api?
-    // plants.push(formData);
-
-    //should we reset formData after successful submit?
-    // setFormData();
   }
 
   function handleChange(e) {
@@ -73,6 +76,10 @@ function App() {
     })
   }
 
+  function closeModal() {
+    setIsModalOpen(false);
+  };
+
   useEffect(() => {
     getPlants();
   },[])
@@ -84,10 +91,14 @@ function App() {
 
   return (
     <div className="App">
-      <div>Plant Tracker</div>
+      <h1>Plant Tracker</h1>
+      {isModalOpen && (
+        <Modal closeModal={closeModal} modalContent={modalContent}/>
+      )}
       <h3>Plants:</h3>
-      <form onSubmit={handleSubmit}>
-        <table>
+      {/* <form onSubmit={handleSubmit}> */}
+      <form>
+        <table class='center'>
           <tr>
             <th>Name</th>
             <th>Location</th>
@@ -95,27 +106,25 @@ function App() {
             <th>Watering Requirements</th>
           </tr>
           {plants.map((plant) => {
-            const {id, name, location, lighting, watering} = plant;
+            const {id, name, location, lightingRequirements, wateringRequirements} = plant;
             return (
               <tr key={id}>
                 <td>{name}</td>
                 <td>{location}</td>
-                <td>{lighting}</td>
-                <td>{watering}</td>
+                <td>{lightingRequirements}</td>
+                <td>{wateringRequirements}</td>
               </tr>
             )
           })}
         </table>
-        <div>
+        <div class='center'>
             <input type='text' placeholder='Plant name' name='name' value={formData.name} onChange={handleChange}/>
             <input type='text' placeholder='Plant location' name='location' value={formData.location} onChange={handleChange}/>
             <input type='text' placeholder='Lighting requirements' name='lightingRequirements' value={formData.lightingRequirements} onChange={handleChange}/>
             <input type='text' placeholder='Watering requirements' name='wateringRequirements' value={formData.wateringRequirements} onChange={handleChange}/>
-            <button type='submit'>add</button>
+            <button type='submit' onClick={handleSubmit}>add</button>
         </div>
       </form>
     </div>
   );
 }
-
-export default App;
